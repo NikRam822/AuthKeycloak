@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakJwtAuthenticationConverter.class);
+
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         List<String> roles = jwt.getClaimAsStringList("roles");
@@ -22,6 +23,9 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Collec
         if (roles == null) {
             return Collections.emptyList();
         }
+        roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .forEach(authority -> LOGGER.info("GrantedAuthority: {}", authority));
 
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
